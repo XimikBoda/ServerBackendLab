@@ -222,7 +222,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://{{domain}}/records?id_user=0",
+					"raw": "http://{{domain}}/records?id_user=0&id_category=0",
 					"protocol": "http",
 					"host": [
 						"{{domain}}"
@@ -233,6 +233,10 @@
 					"query": [
 						{
 							"key": "id_user",
+							"value": "0"
+						},
+						{
+							"key": "id_category",
 							"value": "0"
 						}
 					]
