@@ -24,7 +24,28 @@ db_users_shema = {
         "additionalProperties": False
     },
     "required": ["name"]
-}            
+}      
+
+db_categories = [
+    {
+        "id": 0,
+        "name": "Empty"
+    }
+]
+
+db_categories_shema = {
+    "type": "object",
+    "properties": {
+        "id": {"type": "number",
+            "minimum": 0,
+            },
+        "name": {
+            "type": "string",
+            },
+        "additionalProperties": False
+    },
+    "required": ["name"]
+} 
 
 
 @app.route("/test")
@@ -53,3 +74,28 @@ def add_users():
     db_users.append(request_d)
 
     return db_users[-1]
+
+
+@app.route("/categories", methods=["GET"])
+def get_categories():
+    return jsonify({"categories": db_categories})
+
+@app.route("/categories", methods=["POST"])
+def add_categories():
+    request_d = request.get_json()
+    try:
+        validate(request_d, db_categories_shema)
+    except:
+        abort(400)
+
+    last_id = db_categories[-1]["id"]
+    if "id" in request_d:
+        if request_d["id"] <= last_id:
+            abort(400)
+    else:
+        request_d ["id"] = last_id + 1
+
+    db_categories.append(request_d)
+
+    return db_categories[-1]
+
