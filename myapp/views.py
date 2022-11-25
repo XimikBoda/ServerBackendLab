@@ -1,113 +1,36 @@
-from flask import abort, jsonify, request
+from flask import jsonify, request
+from flask_smorest import abort, Api
 from jsonschema import validate
 from datetime import datetime
 
 from myapp import app
 
-db_users = [
-    {
-        "id": 0,
-        "name": "NULL user"
-    }
-]
 
-db_users_shema = {
-    "type": "object",
-    "properties": {
-        "id": {"type": "number",
-            "minimum": 0,
-            },
-        "name": {
-            "type": "string",
-            },
-        "additionalProperties": False
-    },
-    "required": ["name"]
-}      
+from myapp.db import db_users, db_categories, db_records, db_users_shema, db_categories_shema, db_records_shema
 
-db_categories = [
-    {
-        "id": 0,
-        "name": "Empty"
-    }
-]
+from myapp.resources.users import blp as UsersBlp
 
-db_categories_shema = {
-    "type": "object",
-    "properties": {
-        "id": {"type": "number",
-            "minimum": 0,
-            },
-        "name": {
-            "type": "string",
-            },
-        "additionalProperties": False
-    },
-    "required": ["name"]
-} 
+app.config["PROPAGATE_EXCEPTION"] = True
+app.config["API_TITLE"] = ""
+app.config["API_VERSION"] = "v1"
+app.config["OPENAPI_VERSION"] = "3.0.3"
+app.config["OPENAPI_URL_PREFIX"] = "/"
+app.config["OPENAPI_SWAGGER_UI_PATH"] = "/swagger-ui"
+app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
 
-db_records = [
-    {
-        "id": 0,
-        "id_user": 0,
-        "id_category": 0,
-        "date_and_time": "",
-        "sum": 0
-    }
-]
-db_records_shema = {
-    "type": "object",
-    "properties": {
-        "id": {"type": "number",
-            "minimum": 0,
-            },
-        "id_user": {
-            "type": "number",
-            "minimum": 0,
-            },
-        "id_category": {
-            "type": "number",
-            "minimum": 0,
-            },
-        "date_and_time": {
-            "type": "string",
-            },
-        "sum": {
-            "type": "number",
-            "minimum": 0,
-            },
-        "additionalProperties": False
-    },
-    "required": ["id_user", "id_category"]
-} 
+api = Api(app)
+
+api.register_blueprint(UsersBlp)
+
+
+
+
 
 
 @app.route("/test")
 def test():
     return "<p>Test page</p>"
 
-@app.route("/users", methods=["GET"])
-def get_users():
-    return jsonify({"users": db_users})
-
-@app.route("/users", methods=["POST"])
-def add_users():
-    request_d = request.get_json()
-    try:
-        validate(request_d, db_users_shema)
-    except:
-        abort(400)
-
-    last_id = db_users[-1]["id"]
-    if "id" in request_d:
-        if request_d["id"] <= last_id:
-            abort(400)
-    else:
-        request_d ["id"] = last_id + 1
-
-    db_users.append(request_d)
-
-    return db_users[-1]
 
 
 @app.route("/categories", methods=["GET"])
