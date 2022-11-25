@@ -9,6 +9,7 @@ from myapp import app
 from myapp.db import db_users, db_categories, db_records, db_users_shema, db_categories_shema, db_records_shema
 
 from myapp.resources.users import blp as UsersBlp
+from myapp.resources.categories import blp as CategoriesBlp
 
 app.config["PROPAGATE_EXCEPTION"] = True
 app.config["API_TITLE"] = ""
@@ -21,6 +22,7 @@ app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-
 api = Api(app)
 
 api.register_blueprint(UsersBlp)
+api.register_blueprint(CategoriesBlp)
 
 
 
@@ -31,30 +33,6 @@ api.register_blueprint(UsersBlp)
 def test():
     return "<p>Test page</p>"
 
-
-
-@app.route("/categories", methods=["GET"])
-def get_categories():
-    return jsonify({"categories": db_categories})
-
-@app.route("/categories", methods=["POST"])
-def add_categories():
-    request_d = request.get_json()
-    try:
-        validate(request_d, db_categories_shema)
-    except:
-        abort(400)
-
-    last_id = db_categories[-1]["id"]
-    if "id" in request_d:
-        if request_d["id"] <= last_id:
-            abort(400)
-    else:
-        request_d ["id"] = last_id + 1
-
-    db_categories.append(request_d)
-
-    return db_categories[-1]
 
 @app.route("/records", methods=["GET"])
 def get_records():
