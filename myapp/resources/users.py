@@ -29,12 +29,12 @@ class UsersList(MethodView):
         try:
             validate(request_d, db_users_shema)
         except:
-            abort(400)
+            abort(400, messages="json is wrong")
 
         last_id = db_users[-1]["id"]
         if "id" in request_d:
             if request_d["id"] <= last_id:
-                abort(400)
+                abort(400, messages="user_id is wrong")
         else:
             request_d ["id"] = last_id + 1
 
