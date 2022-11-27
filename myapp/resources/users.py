@@ -7,11 +7,13 @@ from jsonschema import validate
 #from myapp.views import bd_users
 
 from myapp.db import db_users, db_categories, db_records, db_users_shema
+from myapp.schemas import UserSchema
 
 blp = Blueprint("user", __name__, description = "Operations on user")
 
 @blp.route("/users/<int:user_id>")
 class Users(MethodView):
+    @blp.response(200, UserSchema)
     def get(self, user_id):
         try:
             return db_users[user_id]
@@ -21,16 +23,13 @@ class Users(MethodView):
 
 @blp.route("/users")
 class UsersList(MethodView):
+    @blp.response(200, UserSchema(many=True))
     def get(self):
         return jsonify(db_users)
 
-    def post(self):
-        request_d = request.get_json()
-        try:
-            validate(request_d, db_users_shema)
-        except:
-            abort(400, messages="json is wrong")
-
+    @blp.arguments(UserSchema)
+    @blp.response(200, UserSchema)
+    def post(self, request_d):
         last_id = db_users[-1]["id"]
         if "id" in request_d:
             if request_d["id"] <= last_id:

@@ -9,12 +9,14 @@ from jsonschema import validate
 #from myapp.views import bd_users
 
 from myapp.db import db_users, db_categories, db_records, db_records_shema
+from myapp.schemas import RecordSchema
 
 blp = Blueprint("record", __name__, description = "Operations on records")
 
 
 @blp.route("/records/<int:record_id>")
 class Records(MethodView):
+    @blp.response(200, RecordSchema)
     def get(self, record_id):
         try:
             return db_records[record_id]
@@ -23,6 +25,7 @@ class Records(MethodView):
 
 @blp.route("/records")
 class RecordsList(MethodView):
+    @blp.response(200, RecordSchema(many=True))
     def get(self):
         args = request.args.to_dict()
 
@@ -52,13 +55,9 @@ class RecordsList(MethodView):
 
         return jsonify(ret)
 
-    def post(self):
-        request_d = request.get_json()
-        try:
-            validate(request_d, db_records_shema)
-        except:
-            abort(400, messages="json is wrong")
-
+    @blp.arguments(RecordSchema)
+    @blp.response(200, RecordSchema)
+    def post(self, request_d):
         last_id = db_records[-1]["id"]
         if "id" in request_d:
             if request_d["id"] <= last_id:
@@ -67,7 +66,7 @@ class RecordsList(MethodView):
             request_d["id"] = last_id + 1
 
         if "date_and_time" not in request_d:
-            request_d["date_and_time"] = datetime.now().strftime("%Y.%m.%d, %H:%M:%S")
+            request_d["date_and_time"] = datetime.now()
 
         db_records.append(request_d)
 
