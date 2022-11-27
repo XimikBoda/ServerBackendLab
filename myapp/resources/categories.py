@@ -2,11 +2,9 @@ from flask.views import MethodView
 from flask import jsonify, request
 from flask_smorest import Blueprint, abort
 
-from jsonschema import validate
-
 #from myapp.views import bd_users
 
-from myapp.db import db_users, db_categories, db_records, db_categories_shema
+from myapp.db import db_users, db_categories, db_records
 from myapp.schemas import CategorySchema
 
 blp = Blueprint("categories", __name__, description = "Operations on categories")

@@ -4,11 +4,9 @@ from flask_smorest import Blueprint, abort
 
 from datetime import datetime
 
-from jsonschema import validate
-
 #from myapp.views import bd_users
 
-from myapp.db import db_users, db_categories, db_records, db_records_shema
+from myapp.db import db_users, db_categories, db_records
 from myapp.schemas import RecordSchema
 
 blp = Blueprint("record", __name__, description = "Operations on records")

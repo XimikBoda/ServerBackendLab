@@ -1,6 +1,5 @@
 from flask import jsonify, request
 from flask_smorest import abort, Api
-from jsonschema import validate
 from datetime import datetime
 
 from myapp import app
