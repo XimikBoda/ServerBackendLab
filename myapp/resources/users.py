@@ -1,10 +1,12 @@
 from flask.views import MethodView
 from flask import jsonify, request
 from flask_smorest import Blueprint, abort
+from sqlalchemy.exc import IntegrityError
 
 #from myapp.views import bd_users
 
-from myapp.db import db_users
+from myapp.db import db
+from myapp.models.users import UsersModel
 from myapp.schemas import UserSchema
 
 blp = Blueprint("user", __name__, description = "Operations on user")
@@ -13,28 +15,23 @@ blp = Blueprint("user", __name__, description = "Operations on user")
 class Users(MethodView):
     @blp.response(200, UserSchema)
     def get(self, user_id):
-        try:
-            return db_users[user_id]
-        except KeyError:
-            abort(404, messages="User is not found")
+        return UsersModel.query.get_or_404(user_id)
 
 
 @blp.route("/users")
 class UsersList(MethodView):
     @blp.response(200, UserSchema(many=True))
     def get(self):
-        return jsonify(db_users)
+        return UsersModel.query.all()
 
     @blp.arguments(UserSchema)
     @blp.response(200, UserSchema)
     def post(self, request_d):
-        last_id = db_users[-1]["id"]
-        if "id" in request_d:
-            if request_d["id"] <= last_id:
-                abort(400, messages="user_id is wrong")
-        else:
-            request_d ["id"] = last_id + 1
+        user = UsersModel(**request_d)
+        try:
+            db.session.add(user)
+            db.session.commit()
+        except IntegrityError:
+            abort(400, message="User name is already exists")
 
-        db_users.append(request_d)
-
-        return db_users[-1]
+        return user
