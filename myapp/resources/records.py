@@ -32,9 +32,7 @@ class RecordsList(MethodView):
                 id_user = int(args['id_user'])
         if 'id_category' in args:
                 id_category = int(args['id_category'])
-        
-        ret = []
-
+    
         if id_user==-1:
             abort(400, messages="Need id_user")
 

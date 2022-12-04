@@ -18,6 +18,14 @@ class RecordsModel(db.Model):
         db.ForeignKey("categories.id"),
         unique=False,
         nullable=False)
+
+    
+    id_currency = db.Column(
+        db.Integer, 
+        db.ForeignKey("currencies.id"),
+        unique=False,
+        nullable=False,
+        server_default='1')
     
     date_and_time = db.Column(db.TIMESTAMP, server_default=func.now())
 
@@ -25,3 +33,4 @@ class RecordsModel(db.Model):
 
     users = db.relationship("UsersModel",  back_populates="records")
     categories = db.relationship("CategoriesModel",  back_populates="records")
+    currencies = db.relationship("CurrenciesModel",  back_populates="records")
