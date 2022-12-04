@@ -2,6 +2,12 @@
 
 > By Igor Philonenko, IK-01
 
+## Additional task
+- My group: IK-01
+- 1 % 3 = 1
+
+My own task is: "Currencies" (Валюти).
+
 ## How to run it locally
 1. Install [docker](https://www.docker.com/)
 2. Install docker-compose (```sudo apt install docker-compose```)
