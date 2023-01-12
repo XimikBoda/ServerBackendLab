@@ -1,5 +1,6 @@
 from flask.views import MethodView
 from flask import jsonify, request
+from flask_jwt_extended import jwt_required
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import IntegrityError
 
@@ -17,12 +18,14 @@ blp = Blueprint("record", __name__, description = "Operations on records")
 @blp.route("/records/<int:record_id>")
 class Records(MethodView):
     @blp.response(200, RecordSchema)
+    @jwt_required()
     def get(self, record_id):
         return RecordsModel.query.get_or_404(record_id)
 
 @blp.route("/records")
 class RecordsList(MethodView):
     @blp.response(200, RecordSchema(many=True))
+    @jwt_required()
     def get(self):
         args = request.args.to_dict()
 
@@ -45,6 +48,7 @@ class RecordsList(MethodView):
 
     @blp.arguments(RecordSchema)
     @blp.response(200, RecordSchema)
+    @jwt_required()
     def post(self, request_d):
         record = RecordsModel(**request_d)
         try:
